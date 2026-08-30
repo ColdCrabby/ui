@@ -31,6 +31,14 @@ export { FieldRow } from './lib/ui/field-row/field-row';
 export { ModalShell } from './lib/ui/modal-shell/modal-shell';
 export { WizardShell } from './lib/ui/wizard/wizard-shell';
 
+// --- Core app services -----------------------------------------------------
+// App-agnostic services every consumer needs. Presentational primitives above
+// stay stateless; these own cross-cutting concerns (persisted preferences,
+// colour scheme) so each app does not re-implement them.
+export { BrowserStorage } from './lib/services/browser-storage';
+export type { StorageArea } from './lib/services/browser-storage';
+export { ThemeService } from './lib/services/theme';
+
 // --- Shared presentational building blocks ---------------------------------
 export { Icon } from './lib/shared/icon/icon';
 export { IconCache } from './lib/shared/icon/icon-cache';
