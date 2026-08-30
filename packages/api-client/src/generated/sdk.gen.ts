@@ -9,10 +9,8 @@ import type {
   GetPresetData,
   GetPresetErrors,
   GetPresetResponses,
-  ListVendorPresetsData,
-  ListVendorPresetsErrors,
-  ListVendorPresetsResponses,
   ListVendorsData,
+  ListVendorsErrors,
   ListVendorsResponses,
   SearchPresetsData,
   SearchPresetsErrors,
@@ -38,7 +36,22 @@ export type Options<
 };
 
 /**
+ * Liveness and readiness
+ *
+ * Reports process liveness, catalog readiness, the served catalog revision, and the time of the last successful ingest.
+ */
+export const getHealth = <ThrowOnError extends boolean = false>(
+  options?: Options<GetHealthData, ThrowOnError>,
+): RequestResult<GetHealthResponses, GetHealthErrors, ThrowOnError> =>
+  (options?.client ?? client).get<GetHealthResponses, GetHealthErrors, ThrowOnError>({
+    url: '/v1/health',
+    ...options,
+  });
+
+/**
  * Search or browse the preset catalog
+ *
+ * Searches the in-memory catalog of presets ingested from ColdCrabby/presets. Returns a page of summaries for rendering result rows.
  */
 export const searchPresets = <ThrowOnError extends boolean = false>(
   options?: Options<SearchPresetsData, ThrowOnError>,
@@ -50,6 +63,8 @@ export const searchPresets = <ThrowOnError extends boolean = false>(
 
 /**
  * Fetch a complete preset in the slicer's profile shape
+ *
+ * Returns the complete preset identified by id, with source "catalog" and a canonical import_url. This is the exact JSON the slicer can consume directly, so a client imports one preset without downloading the whole catalog.
  */
 export const getPreset = <ThrowOnError extends boolean = false>(
   options: Options<GetPresetData, ThrowOnError>,
@@ -61,38 +76,13 @@ export const getPreset = <ThrowOnError extends boolean = false>(
 
 /**
  * List the vendor directory
+ *
+ * Returns a page of the vendor directory derived from the vendor.yaml manifests in the served catalog. The directory is cursor-paginated so it is never dumped in one response; the stytch_organization_id is not part of the public representation.
  */
 export const listVendors = <ThrowOnError extends boolean = false>(
   options?: Options<ListVendorsData, ThrowOnError>,
-): RequestResult<ListVendorsResponses, unknown, ThrowOnError> =>
-  (options?.client ?? client).get<ListVendorsResponses, unknown, ThrowOnError>({
+): RequestResult<ListVendorsResponses, ListVendorsErrors, ThrowOnError> =>
+  (options?.client ?? client).get<ListVendorsResponses, ListVendorsErrors, ThrowOnError>({
     url: '/v1/vendors',
-    ...options,
-  });
-
-/**
- * List presets owned by the caller's organization
- */
-export const listVendorPresets = <ThrowOnError extends boolean = false>(
-  options?: Options<ListVendorPresetsData, ThrowOnError>,
-): RequestResult<ListVendorPresetsResponses, ListVendorPresetsErrors, ThrowOnError> =>
-  (options?.client ?? client).get<
-    ListVendorPresetsResponses,
-    ListVendorPresetsErrors,
-    ThrowOnError
-  >({
-    security: [{ scheme: 'bearer', type: 'http' }],
-    url: '/v1/vendor/presets',
-    ...options,
-  });
-
-/**
- * Liveness and readiness, including the served catalog revision
- */
-export const getHealth = <ThrowOnError extends boolean = false>(
-  options?: Options<GetHealthData, ThrowOnError>,
-): RequestResult<GetHealthResponses, GetHealthErrors, ThrowOnError> =>
-  (options?.client ?? client).get<GetHealthResponses, GetHealthErrors, ThrowOnError>({
-    url: '/v1/health',
     ...options,
   });

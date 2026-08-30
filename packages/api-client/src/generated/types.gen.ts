@@ -4,206 +4,319 @@ export type ClientOptions = {
   baseUrl: `${string}://${string}` | (string & {});
 };
 
-export type PresetType = 'printer' | 'filament' | 'process';
-
-/**
- * A [start, end) pair of UTF-16 code-unit offsets into the original field value.
- */
-export type MatchRange = [number, number];
-
-/**
- * Which field matched the query and where, so the client can highlight it.
- */
-export type MatchInfo = {
-  field: string;
-  ranges: Array<MatchRange>;
-};
-
-/**
- * Enough to render a result row without shipping every slicing parameter.
- */
-export type PresetSummary = {
-  id: string;
-  type: PresetType;
-  name: string;
-  vendor: string;
-  model?: string | null;
-  material?: string | null;
+export type ErrorDetail = {
   /**
-   * A short human-readable spec string.
+   * Where the error occurred, e.g. 'body.items[3].tags' or 'path.thing-id'
    */
-  spec: string;
-  match?: MatchInfo;
-};
-
-export type SearchResponse = {
-  results: Array<PresetSummary>;
+  location?: string;
   /**
-   * Opaque continuation token; absent on the last page.
+   * Error message text
    */
-  next_cursor?: string | null;
+  message?: string;
   /**
-   * Catalog revision the page was served from.
+   * The value at the given location
    */
-  revision?: string;
-};
-
-/**
- * The complete preset in the slicer's profile shape.
- */
-export type Preset = {
-  id: string;
-  type: PresetType;
-  name: string;
-  vendor: string;
-  source: 'catalog';
-  import_url: string;
-  params: {
-    [key: string]: unknown;
-  };
-};
-
-export type Vendor = {
-  slug: string;
-  display_name: string;
-  brands: Array<string>;
-  website?: string | null;
-};
-
-export type Health = {
-  ready: boolean;
-  revision?: string | null;
-  last_ingest_at?: string | null;
-};
-
-export type ProblemError = {
-  location: string;
-  message: string;
   value?: unknown;
 };
 
-/**
- * RFC 9457 problem details.
- */
-export type Problem = {
-  type?: string;
-  title?: string;
-  status?: number;
+export type ErrorModel = {
+  /**
+   * A URL to the JSON Schema for this object.
+   */
+  readonly $schema?: string;
+  /**
+   * A human-readable explanation specific to this occurrence of the problem.
+   */
   detail?: string;
-  errors?: Array<ProblemError>;
+  /**
+   * Optional list of individual error details
+   */
+  errors?: Array<ErrorDetail> | null;
+  /**
+   * A URI reference that identifies the specific occurrence of the problem.
+   */
+  instance?: string;
+  /**
+   * HTTP status code
+   */
+  status?: number;
+  /**
+   * A short, human-readable summary of the problem type. This value should not change between occurrences of the error.
+   */
+  title?: string;
+  /**
+   * A URI reference to human-readable documentation for the error.
+   */
+  type?: string;
 };
 
-export type SearchPresetsData = {
-  body?: never;
-  path?: never;
-  query?: {
-    /**
-     * Fuzzy query across name, vendor, model, material. Omit to browse.
-     */
-    q?: string;
-    type?: PresetType;
-    vendor?: string;
-    material?: string;
-    limit?: number;
-    cursor?: string;
+export type HealthResponseBody = {
+  /**
+   * A URL to the JSON Schema for this object.
+   */
+  readonly $schema?: string;
+  /**
+   * Time of the last successful ingest, or null until the first ingest.
+   */
+  lastIngestAt: string | null;
+  /**
+   * True once a catalog has been loaded. False until the first successful ingest.
+   */
+  ready: boolean;
+  /**
+   * Git commit SHA of the served catalog, or null until the first ingest.
+   */
+  revision: string | null;
+  /**
+   * Liveness marker; always "ok" when the process can respond.
+   */
+  status: string;
+};
+
+export type ListVendorsResponseBody = {
+  /**
+   * A URL to the JSON Schema for this object.
+   */
+  readonly $schema?: string;
+  /**
+   * Continuation token; absent on the last page.
+   */
+  next_cursor?: string;
+  /**
+   * Catalog revision the page was served from.
+   */
+  revision: string;
+  /**
+   * The page of vendor directory entries.
+   */
+  vendors: Array<Vendor> | null;
+};
+
+export type MatchInfo = {
+  /**
+   * Name of the field the query matched.
+   */
+  field: string;
+  /**
+   * Offsets within the field value that matched.
+   */
+  ranges: Array<[number, number] | null> | null;
+};
+
+export type PresetResponseBody = {
+  /**
+   * A URL to the JSON Schema for this object.
+   */
+  readonly $schema?: string;
+  /**
+   * Stable identifier of the preset.
+   */
+  id: string;
+  /**
+   * Canonical URL of this preset, for re-import into the slicer.
+   */
+  import_url: string;
+  /**
+   * Human-readable preset name.
+   */
+  name: string;
+  /**
+   * The preset's slicing parameters in the slicer's own field names and units.
+   */
+  params: {
+    [key: string]: unknown;
   };
-  url: '/v1/presets';
-};
-
-export type SearchPresetsErrors = {
   /**
-   * RFC 9457 problem details.
+   * Where the preset came from; always "catalog" when served here.
    */
-  409: Problem;
-};
-
-export type SearchPresetsError = SearchPresetsErrors[keyof SearchPresetsErrors];
-
-export type SearchPresetsResponses = {
+  source: 'catalog';
   /**
-   * A page of preset summaries.
+   * Kind of profile the preset describes.
    */
-  200: SearchResponse;
+  type: 'printer' | 'filament' | 'process';
+  /**
+   * Vendor slug the preset belongs to.
+   */
+  vendor: string;
 };
 
-export type SearchPresetsResponse = SearchPresetsResponses[keyof SearchPresetsResponses];
+export type PresetSummary = {
+  /**
+   * Stable identifier of the preset.
+   */
+  id: string;
+  /**
+   * Where the query matched, for highlighting.
+   */
+  match?: MatchInfo;
+  /**
+   * Filament material, when applicable.
+   */
+  material?: string;
+  /**
+   * Printer model, when applicable.
+   */
+  model?: string;
+  /**
+   * Human-readable preset name.
+   */
+  name: string;
+  /**
+   * Short human-readable spec string.
+   */
+  spec: string;
+  /**
+   * Kind of profile the preset describes.
+   */
+  type: 'printer' | 'filament' | 'process';
+  /**
+   * Vendor slug the preset belongs to.
+   */
+  vendor: string;
+};
 
-export type GetPresetData = {
-  body?: never;
-  path: {
-    id: string;
+export type SearchResponseBody = {
+  /**
+   * A URL to the JSON Schema for this object.
+   */
+  readonly $schema?: string;
+  /**
+   * Continuation token; absent on the last page.
+   */
+  next_cursor?: string;
+  /**
+   * The page of matching preset summaries.
+   */
+  results: Array<PresetSummary> | null;
+  /**
+   * Catalog revision the page was served from.
+   */
+  revision: string;
+};
+
+export type Vendor = {
+  /**
+   * Human-readable vendor name.
+   */
+  display_name: string;
+  /**
+   * Stable vendor slug, matching the vendor.yaml directory name.
+   */
+  slug: string;
+  /**
+   * Vendor website, when the manifest declares one.
+   */
+  website?: string;
+};
+
+export type ErrorModelWritable = {
+  /**
+   * A human-readable explanation specific to this occurrence of the problem.
+   */
+  detail?: string;
+  /**
+   * Optional list of individual error details
+   */
+  errors?: Array<ErrorDetail> | null;
+  /**
+   * A URI reference that identifies the specific occurrence of the problem.
+   */
+  instance?: string;
+  /**
+   * HTTP status code
+   */
+  status?: number;
+  /**
+   * A short, human-readable summary of the problem type. This value should not change between occurrences of the error.
+   */
+  title?: string;
+  /**
+   * A URI reference to human-readable documentation for the error.
+   */
+  type?: string;
+};
+
+export type HealthResponseBodyWritable = {
+  /**
+   * Time of the last successful ingest, or null until the first ingest.
+   */
+  lastIngestAt: string | null;
+  /**
+   * True once a catalog has been loaded. False until the first successful ingest.
+   */
+  ready: boolean;
+  /**
+   * Git commit SHA of the served catalog, or null until the first ingest.
+   */
+  revision: string | null;
+  /**
+   * Liveness marker; always "ok" when the process can respond.
+   */
+  status: string;
+};
+
+export type ListVendorsResponseBodyWritable = {
+  /**
+   * Continuation token; absent on the last page.
+   */
+  next_cursor?: string;
+  /**
+   * Catalog revision the page was served from.
+   */
+  revision: string;
+  /**
+   * The page of vendor directory entries.
+   */
+  vendors: Array<Vendor> | null;
+};
+
+export type PresetResponseBodyWritable = {
+  /**
+   * Stable identifier of the preset.
+   */
+  id: string;
+  /**
+   * Canonical URL of this preset, for re-import into the slicer.
+   */
+  import_url: string;
+  /**
+   * Human-readable preset name.
+   */
+  name: string;
+  /**
+   * The preset's slicing parameters in the slicer's own field names and units.
+   */
+  params: {
+    [key: string]: unknown;
   };
-  query?: never;
-  url: '/v1/presets/{id}';
-};
-
-export type GetPresetErrors = {
   /**
-   * RFC 9457 problem details.
+   * Where the preset came from; always "catalog" when served here.
    */
-  404: Problem;
+  source: 'catalog';
   /**
-   * RFC 9457 problem details.
+   * Kind of profile the preset describes.
    */
-  410: Problem;
-};
-
-export type GetPresetError = GetPresetErrors[keyof GetPresetErrors];
-
-export type GetPresetResponses = {
+  type: 'printer' | 'filament' | 'process';
   /**
-   * The complete preset.
+   * Vendor slug the preset belongs to.
    */
-  200: Preset;
+  vendor: string;
 };
 
-export type GetPresetResponse = GetPresetResponses[keyof GetPresetResponses];
-
-export type ListVendorsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: '/v1/vendors';
-};
-
-export type ListVendorsResponses = {
+export type SearchResponseBodyWritable = {
   /**
-   * All known vendors.
+   * Continuation token; absent on the last page.
    */
-  200: Array<Vendor>;
-};
-
-export type ListVendorsResponse = ListVendorsResponses[keyof ListVendorsResponses];
-
-export type ListVendorPresetsData = {
-  body?: never;
-  path?: never;
-  query?: never;
-  url: '/v1/vendor/presets';
-};
-
-export type ListVendorPresetsErrors = {
+  next_cursor?: string;
   /**
-   * RFC 9457 problem details.
+   * The page of matching preset summaries.
    */
-  401: Problem;
+  results: Array<PresetSummary> | null;
   /**
-   * RFC 9457 problem details.
+   * Catalog revision the page was served from.
    */
-  403: Problem;
+  revision: string;
 };
-
-export type ListVendorPresetsError = ListVendorPresetsErrors[keyof ListVendorPresetsErrors];
-
-export type ListVendorPresetsResponses = {
-  /**
-   * The presets the caller's organization owns.
-   */
-  200: Array<PresetSummary>;
-};
-
-export type ListVendorPresetsResponse =
-  ListVendorPresetsResponses[keyof ListVendorPresetsResponses];
 
 export type GetHealthData = {
   body?: never;
@@ -214,18 +327,168 @@ export type GetHealthData = {
 
 export type GetHealthErrors = {
   /**
-   * RFC 9457 problem details.
+   * Error
    */
-  503: Problem;
+  default: ErrorModel;
 };
 
 export type GetHealthError = GetHealthErrors[keyof GetHealthErrors];
 
 export type GetHealthResponses = {
   /**
-   * Health report.
+   * OK
    */
-  200: Health;
+  200: HealthResponseBody;
 };
 
 export type GetHealthResponse = GetHealthResponses[keyof GetHealthResponses];
+
+export type SearchPresetsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Fuzzy query across name, vendor, model, material. Omit to browse.
+     */
+    q?: string;
+    /**
+     * Restrict to one preset type.
+     */
+    type?: 'printer' | 'filament' | 'process';
+    /**
+     * Restrict to one vendor slug.
+     */
+    vendor?: string;
+    /**
+     * Restrict to one filament material.
+     */
+    material?: string;
+    /**
+     * Maximum results to return (bounded server-side).
+     */
+    limit?: number;
+    /**
+     * Opaque continuation token from a previous page.
+     */
+    cursor?: string;
+  };
+  url: '/v1/presets';
+};
+
+export type SearchPresetsErrors = {
+  /**
+   * Conflict
+   */
+  409: ErrorModel;
+  /**
+   * Unprocessable Entity
+   */
+  422: ErrorModel;
+  /**
+   * Internal Server Error
+   */
+  500: ErrorModel;
+  /**
+   * Service Unavailable
+   */
+  503: ErrorModel;
+};
+
+export type SearchPresetsError = SearchPresetsErrors[keyof SearchPresetsErrors];
+
+export type SearchPresetsResponses = {
+  /**
+   * OK
+   */
+  200: SearchResponseBody;
+};
+
+export type SearchPresetsResponse = SearchPresetsResponses[keyof SearchPresetsResponses];
+
+export type GetPresetData = {
+  body?: never;
+  path: {
+    /**
+     * Stable identifier of the preset to fetch.
+     */
+    id: string;
+  };
+  query?: never;
+  url: '/v1/presets/{id}';
+};
+
+export type GetPresetErrors = {
+  /**
+   * Not Found
+   */
+  404: ErrorModel;
+  /**
+   * Unprocessable Entity
+   */
+  422: ErrorModel;
+  /**
+   * Internal Server Error
+   */
+  500: ErrorModel;
+  /**
+   * Service Unavailable
+   */
+  503: ErrorModel;
+};
+
+export type GetPresetError = GetPresetErrors[keyof GetPresetErrors];
+
+export type GetPresetResponses = {
+  /**
+   * OK
+   */
+  200: PresetResponseBody;
+};
+
+export type GetPresetResponse = GetPresetResponses[keyof GetPresetResponses];
+
+export type ListVendorsData = {
+  body?: never;
+  path?: never;
+  query?: {
+    /**
+     * Maximum vendors to return (bounded server-side).
+     */
+    limit?: number;
+    /**
+     * Opaque continuation token from a previous page.
+     */
+    cursor?: string;
+  };
+  url: '/v1/vendors';
+};
+
+export type ListVendorsErrors = {
+  /**
+   * Conflict
+   */
+  409: ErrorModel;
+  /**
+   * Unprocessable Entity
+   */
+  422: ErrorModel;
+  /**
+   * Internal Server Error
+   */
+  500: ErrorModel;
+  /**
+   * Service Unavailable
+   */
+  503: ErrorModel;
+};
+
+export type ListVendorsError = ListVendorsErrors[keyof ListVendorsErrors];
+
+export type ListVendorsResponses = {
+  /**
+   * OK
+   */
+  200: ListVendorsResponseBody;
+};
+
+export type ListVendorsResponse = ListVendorsResponses[keyof ListVendorsResponses];
