@@ -1,0 +1,88 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "cli": {
+    "packageManager": "pnpm",
+    "analytics": false
+  },
+  "newProjectRoot": "projects",
+  "projects": {
+    "dev": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss",
+          "standalone": true,
+          "skipTests": true
+        }
+      },
+      "root": "",
+      "sourceRoot": "dev",
+      "prefix": "cc",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "dev/main.ts",
+            "index": "dev/index.html",
+            "polyfills": ["zone.js"],
+            "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "stylePreprocessorOptions": {
+              "includePaths": ["src/styles"]
+            },
+            "externalDependencies": [
+              "marked-katex-extension",
+              "marked-mangle",
+              "marked-gfm-heading-id",
+              "marked-emoji",
+              "prismjs",
+              "mermaid"
+            ],
+            "assets": [
+              { "glob": "**/*", "input": "dev/public" },
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/iconoir/icons/regular",
+                "output": "/assets/icons"
+              },
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/iconoir/icons/solid",
+                "output": "/assets/icons/solid"
+              }
+            ],
+            "styles": ["dev/styles.scss"]
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                { "type": "initial", "maximumWarning": "1mb", "maximumError": "2mb" },
+                { "type": "anyComponentStyle", "maximumWarning": "8kb", "maximumError": "16kb" }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "options": {
+            "host": "0.0.0.0",
+            "port": 4300
+          },
+          "configurations": {
+            "production": { "buildTarget": "dev:build:production" },
+            "development": { "buildTarget": "dev:build:development" }
+          },
+          "defaultConfiguration": "development"
+        }
+      }
+    }
+  }
+}

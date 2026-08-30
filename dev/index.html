@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Cold Crabby UI — Component Lab</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200..800&family=IBM+Plex+Mono:wght@100;200;300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Paint the correct theme background before the app boots. */
+      html,
+      body {
+        margin: 0;
+        background-color: #f6f6f4;
+        color: #1a1b1d;
+      }
+      html.dark,
+      html.dark body {
+        background-color: #1a1b1d;
+        color: #e8e9ee;
+      }
+    </style>
+    <script>
+      // Apply the persisted theme synchronously to avoid a light/dark flash.
+      (function () {
+        try {
+          var stored = localStorage.getItem('cc-ui-theme');
+          var dark = stored
+            ? stored === 'dark'
+            : matchMedia('(prefers-color-scheme: dark)').matches;
+          if (dark) document.documentElement.classList.add('dark');
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <cc-root></cc-root>
+  </body>
+</html>

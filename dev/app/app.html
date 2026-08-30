@@ -1,0 +1,14 @@
+<header class="lab-topbar">
+  <div class="lab-brand">
+    <span class="lab-mark">◆</span>
+    <span>Cold Crabby UI</span>
+    <span class="lab-tag">Component Lab</span>
+  </div>
+  <button nexusButton variant="ghost" size="sm" type="button" (click)="toggleTheme()">
+    {{ dark() ? 'Light mode' : 'Dark mode' }}
+  </button>
+</header>
+
+<main class="lab-body">
+  <cc-showcase />
+</main>

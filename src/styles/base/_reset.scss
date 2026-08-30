@@ -1,0 +1,51 @@
+/// CSS reset and box-sizing (scrolling-app default)
+/// @group base
+///
+/// This is the app-agnostic reset for a normal, scrolling document. The slicer
+/// overrides it with a viewport-locking variant (full-screen 3D canvas, no page
+/// scroll); that lock is app-specific and deliberately not shipped here.
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  // Disable the blue/grey tap-highlight overlay on iOS/iPadOS.
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font-family-ui);
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-base);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-primary);
+}
+
+// Inner scrollable regions can opt into contained inertial scrolling so a
+// nested scroll never chains back to the document.
+.app-scroll {
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+// Long-press context-menu targets. iOS/iPadOS answers a long press with its own
+// callout bar and selection magnifier, which steal the gesture from a custom
+// menu. Suppressing the callout and selection is what makes long-press menus
+// usable; these are interactive rows, not prose, so nothing selectable is lost.
+.nexus-context-target {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+[hidden] {
+  display: none !important;
+}
