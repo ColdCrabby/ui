@@ -1,0 +1,42 @@
+{
+  "name": "@coldcrabby/ui",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared Cold Crabby frontend UI: the SCSS design language and app-agnostic Angular presentational primitives. Consumed as source (no dist, no release).",
+  "type": "module",
+  "exports": {
+    ".": "./src/public-api.ts",
+    "./styles": "./src/styles/index.scss"
+  },
+  "scripts": {
+    "dev": "ng serve",
+    "start": "ng serve",
+    "build": "ng build",
+    "format": "prettier --write \"{src,dev}/**/*.{ts,html,scss}\"",
+    "format:check": "prettier --check \"{src,dev}/**/*.{ts,html,scss}\""
+  },
+  "dependencies": {
+    "@angular/aria": "^22.1.4",
+    "@angular/cdk": "^22.1.4",
+    "@angular/common": "^22.1.4",
+    "@angular/core": "^22.1.4",
+    "@angular/forms": "^22.1.4",
+    "@angular/platform-browser": "^22.1.4",
+    "@floating-ui/core": "^1.8.0",
+    "@floating-ui/dom": "^1.8.0",
+    "@floating-ui/utils": "^0.2.12",
+    "iconoir": "^7.12.1",
+    "ngx-markdown": "^22.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.16.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.1.6",
+    "@angular/cli": "^22.1.6",
+    "@angular/compiler": "^22.1.4",
+    "@angular/compiler-cli": "^22.1.4",
+    "prettier": "^3.9.6",
+    "typescript": "~6.0.3"
+  }
+}

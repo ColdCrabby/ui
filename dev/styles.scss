@@ -1,0 +1,3 @@
+// The dev harness is a reference consumer: it pulls the design language in via
+// Sass `includePaths` (see angular.json) exactly as a real app would.
+@use 'index';

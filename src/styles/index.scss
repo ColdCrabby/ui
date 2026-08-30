@@ -1,0 +1,32 @@
+/// Cold Crabby UI — design language entry point.
+///
+/// Consumers add `src/styles` to their Sass `includePaths` (or `@use` this file
+/// by relative path) so every app shares one palette, type scale, and set of
+/// base element styles. It emits global CSS — pull it in once from an app's
+/// root stylesheet, not per-component.
+///
+/// Dark mode is applied by adding `class="dark"` to `<html>`; every token flips
+/// via the cascade with no JavaScript reparse.
+/// @group styles
+
+// Theme: mode-independent tokens, then light/dark CSS variables.
+@use './theme/root';
+@use './theme/light';
+@use './theme/dark';
+@use './theme/tokens' as *;
+
+// Mixins (available to consumers via `@use '<includePath>/mixins'`).
+@use './mixins' as *;
+
+// Base element styles.
+@use './base/reset';
+@use './base/focus';
+@use './base/typography';
+@use './base/forms';
+@use './base/scrollbar';
+// Positioning host classes for the shared FloatingService (tooltip, select,
+// color-picker popovers). Presentational, not slicer-specific.
+@use './base/floating';
+
+// Utility classes.
+@use './utilities/utilities';
