@@ -30,7 +30,6 @@ export type { InlineNoticeTone } from './lib/ui/inline-notice/inline-notice';
 export { FieldRow } from './lib/ui/field-row/field-row';
 export { ModalShell } from './lib/ui/modal-shell/modal-shell';
 export { WizardShell } from './lib/ui/wizard/wizard-shell';
-export { ThemeToggle } from './lib/ui/theme-toggle/theme-toggle';
 
 // --- Core app services -----------------------------------------------------
 // App-agnostic services every consumer needs. Presentational primitives above
