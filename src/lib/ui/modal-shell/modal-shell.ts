@@ -3,8 +3,8 @@ import { Icon } from '../../shared/icon/icon';
 
 /**
  * Minimal centered modal: scrim + solid card with a titled header, a close
- * button, and a scrolling `<ng-content>` body. For lightweight overlays (e.g.
- * the catalog browser) that don't need the multi-step wizard chrome.
+ * button, and a scrolling `<ng-content>` body. For lightweight overlays such as
+ * a catalog browser — one surface, one job, no step sequence of its own.
  */
 @Component({
   selector: 'nexus-modal-shell',

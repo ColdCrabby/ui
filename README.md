@@ -37,7 +37,7 @@ dev/                     # local dev harness (a reference consumer — see below
 
 `Button` · `IconButton` · `SectionHeader` · `EmptyState` · `Switch` · `Slider` ·
 `RangeSlider` · `NumberInput` · `Select` · `RadioGroup` · `Segmented` ·
-`ColorPicker` · `InlineNotice` · `FieldRow` · `ModalShell` · `WizardShell` ·
+`ColorPicker` · `InlineNotice` · `FieldRow` · `ModalShell` ·
 `Icon` · `Badge` · `TooltipDirective` · `FloatingService` · `RadioGroupDirective`
 · `RadioButtonValue` · `StackWhenCramped` · `UserInputModality`.
 
